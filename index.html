@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUGLOAD Shipping Calculator</title>
+    <style>
+        #calculator {
+            width: 400px;
+            padding: 20px;
+            background-color: lightblue;
+            border: 2px solid blue;
+            border-radius: 10px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: blue;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        #error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        #result {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="calculator">
+        <h2 style="font-weight: bold;">LUGLOAD Shipping Calculator</h2>
+        <label for="distance">Distance (in km):</label>
+        <input type="number" id="distance" placeholder="Enter distance in km">
+
+        <label for="weight">Weight (in kg):</label>
+        <input type="number" id="weight" placeholder="Enter weight in kg">
+
+        <label for="length">Length (in cm):</label>
+        <input type="number" id="length" placeholder="Enter length in cm">
+
+        <label for="width">Width (in cm):</label>
+        <input type="number" id="width" placeholder="Enter width in cm">
+
+        <label for="height">Height (in cm):</label>
+        <input type="number" id="height" placeholder="Enter height in cm">
+
+        <label for="paymentMode">Payment Mode:</label>
+        <select id="paymentMode">
+            <option value="">Select Payment Mode</option>
+            <option value="UPI">UPI</option>
+            <option value="NetBanking">Net Banking</option>
+        </select>
+
+        <label for="insurance">Insurance:</label>
+        <select id="insurance">
+            <option value="">Select Insurance Option</option>
+            <option value="yes">Yes (₹100)</option>
+            <option value="no">No</option>
+        </select>
+
+        <label for="expressDelivery">Express Delivery:</label>
+        <select id="expressDelivery">
+            <option value="">Select Express Delivery Option</option>
+            <option value="yes">Yes (₹30)</option>
+            <option value="no">No</option>
+        </select>
+
+        <label for="shipmentValue">Shipment Value (in ₹):</label>
+        <input type="number" id="shipmentValue" placeholder="Enter shipment value in ₹">
+
+        <button onclick="calculateShipping()">Calculate Your Shipment</button>
+
+        <div id="error"></div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function calculateShipping() {
+            const distance = parseFloat(document.getElementById('distance').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const length = parseFloat(document.getElementById('length').value);
+            const width = parseFloat(document.getElementById('width').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const paymentMode = document.getElementById('paymentMode').value;
+            const insurance = document.getElementById('insurance').value;
+            const expressDelivery = document.getElementById('expressDelivery').value;
+            const shipmentValue = parseFloat(document.getElementById('shipmentValue').value);
+
+            if (!distance || !weight || !length || !width || !height || !paymentMode || !insurance || !expressDelivery || !shipmentValue) {
+                document.getElementById('result').innerHTML = '';
+                document.getElementById('error').innerHTML = 'Please fill all the fields.';
+                return;
+            }
+
+            if (shipmentValue > 10000) {
+                document.getElementById('result').innerHTML = '';
+                document.getElementById('error').innerHTML = 'Item worth more than ₹10,000 cannot be shipped.';
+                return;
+            }
+
+            const volumetricWeight = (length * width * height) / 5000;
+
+            const finalWeight = Math.max(weight, volumetricWeight);
+
+            const baseRate = 20;
+            const ratePerKg = 4;
+            const ratePerKm = 5;
+            let shippingCost = baseRate + (finalWeight * ratePerKg) + (distance * ratePerKm);
+
+            document.getElementById('error').innerHTML = '';
+
+            let insuranceCost = 0;
+            let expressDeliveryCost = 0;
+
+            if (insurance === 'yes') {
+                insuranceCost = 100;
+            }
+
+            if (expressDelivery === 'yes') {
+                expressDeliveryCost = 30;
+            }
+
+            shippingCost += insuranceCost + expressDeliveryCost;
+
+            document.getElementById('result').innerHTML = `Shipping Cost: ₹${shippingCost.toFixed(2)}`;
+        }
+    </script>
+</body>
+
+</html>
